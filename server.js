@@ -5,6 +5,11 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
+// Root route to fix "Cannot GET /" error
+app.get('/', (req, res) => {
+  res.send('Contact Form API is running');
+});
+
 // Simple POST route with validation
 app.post('/api/contact', (req, res) => {
   const { name, email, message } = req.body;
