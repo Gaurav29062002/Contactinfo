@@ -3,20 +3,31 @@ version: 2.1
 jobs:
   build-and-test:
     docker:
-      - image: cimg/node:21.0  # Official Node.js CircleCI image
+      - image: cimg/node:21.0
     steps:
       - checkout
-
       - run:
           name: Install dependencies
           command: npm install
-
       - run:
-          name: Run Tests
+          name: Run tests
           command: npm test
+
+  deploy:
+    docker:
+      - image: curlimages/curl:latest
+    steps:
+      - run:
+          name: Trigger Render Deployment
+          command: |
+            curl -X POST https://api.render.com/deploy/srv-d0bpps1r0fns73do543g \
+              -H 'Authorization: Bearer '"$RENDER_API_KEY"
 
 workflows:
   version: 2
-  build:
+  build-test-deploy:
     jobs:
       - build-and-test
+      - deploy:
+          requires:
+            - build-and-test
